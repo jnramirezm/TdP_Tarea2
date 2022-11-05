@@ -12,9 +12,12 @@ int main(){
 
     p1.insert(1);
     p1.insert(2);
-    p1.insert(8);
+    p1.insert(3);
+    p1.insert(5);
+    p.printItems();
 
 
-    cout << (p <= p1) << endl;
+    cout << (p == p1) << endl;
+
     return 0;
 }
