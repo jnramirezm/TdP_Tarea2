@@ -10,9 +10,12 @@ public:
     Container_Solver();
     int capacity;
     multiset<int, greater<int>> items;
+    Container heuristicsss;
     int solve();
     int heurisic();
     int sumItems();
     bool checksubSets(int k);
     string createKey(Container c);
+    string itemstoString(multiset<int, greater<int>> items);
+    string packageKey(Package p);
 };

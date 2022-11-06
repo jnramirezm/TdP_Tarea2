@@ -4,6 +4,7 @@ using namespace std;
 Container_Solver::Container_Solver(){
     this-> capacity = capacity;
     this-> items = items;
+    this-> heuristicsss = Container();
 }
 
 int Container_Solver::heurisic(){
@@ -32,25 +33,30 @@ int Container_Solver::heurisic(){
             container.insert(aux);
         }
     }
+    this->heuristicsss = container;
     return container.C.size();
 }
 
 int Container_Solver::solve(){
     int a = heurisic();
-    int b = sumItems()/items.size();
+    int b = sumItems()/capacity;
+    cout << "Heuristic: " << a << endl;
+    cout << "Optimal: " << b << endl;
     while(a > b){
         int k = (a+b)/2;
         if(checksubSets(k)){
             a = k;
         }else{
-            if( b != k)
+            if( b != k){
                 b = k;
-            else
-                b = k+1;
-            
+            }
+            else{
+                b++;
+            }
         }
     }
-    return 0;
+    heuristicsss.printPackages();
+    return a;
 }
 
 int Container_Solver::sumItems(){
@@ -66,7 +72,12 @@ bool Container_Solver::checksubSets(int k){
     // Crear un hash table con todos los subconjuntos de containers
     string fKey;
     int condition;
-    unordered_map<string,Container> hTable, nexthTable;
+    vector<Container> containers;
+    unordered_map<string,Container> hTable, nexthTable, nextnexthTable;
+    //unordered_map<string, Package> hPackage, nexthPackage;
+    // multiset de multiset de int
+    // multiset de paquetes
+    // container
     //unordered_set<Container> hTableSet;
     Container container = Container(capacity,k);
     for(int i = 0 ; i < k ; i++){
@@ -77,33 +88,33 @@ bool Container_Solver::checksubSets(int k){
     hTable.insert(make_pair(fKey,container));
     for (int i : items){
         condition = 0;
-        for (auto it = hTable.begin(); it != hTable.end(); ++it){
-            Container aux = it->second;
-            aux.printPackages();
-            cout << "item : "<< i << endl;
-            for(auto it2 = aux.C.begin(); it2 != aux.C.end(); ++it2){
-                Package aux2 = *it2;
-                if (aux2.getSum() + i <= capacity){
-                    aux2.insert(i);
-                    aux.C.erase(aux.C.find(*it2));
-                    aux.C.insert(aux2);
-                    fKey = createKey(aux);
-                    auto inserted = nexthTable.insert(make_pair(fKey,aux));
-                    if(inserted.second){
-                        condition = 1;
-                        break;
+            for (auto it = hTable.begin(); it != hTable.end(); ++it){
+                Container aux = it->second;
+                for(auto it2 = aux.C.begin(); it2 != aux.C.end(); ++it2){
+                    Package aux2 = *it2;
+                    if (aux2.getSum() + i <= capacity){
+                        aux2.insert(i);
+                        Container aux3 = aux;
+                        aux3.C.erase(aux3.C.find(*it2));
+                        aux3.C.insert(aux2);
+                        fKey = createKey(aux3);
+                        auto inserted = nexthTable.insert(make_pair(fKey,aux3));
+                        if(inserted.second){
+                            nextnexthTable.insert(make_pair(fKey,aux3));
+                            condition = 1;
+                        }
                     }
-                    
                 }  
             };
-        }
         if(condition == 0){
             return false;
         }
         hTable.clear();
-        hTable = nexthTable;
-        //nexthTable.clear();
+        hTable = nextnexthTable;
+        nextnexthTable.clear();
+        nexthTable.clear();
     }
+    string sItems = itemstoString(items);
     for(auto it = hTable.begin(); it != hTable.end(); ++it){
         string aux = it->first;
         stringstream ss(aux);
@@ -111,8 +122,9 @@ bool Container_Solver::checksubSets(int k){
         getline(ss, token, ',');
         int sum = stoi(token);
         if(sum == items.size()){
-            cout << aux << endl;
-            it->second.printPackages();
+            cout << "Found" << endl;
+            heuristicsss = it->second;
+            break;
         }
 
         //it->second.printPackages();
@@ -130,8 +142,27 @@ string Container_Solver::createKey(Container c){
             key += to_string(*it2);
         }
     }
-    sort(key.begin(), key.end());
+   // sort(key.begin(), key.end());
     string b = to_string(sumsize) + "." + key;
     return b;
 }
+
+string Container_Solver::itemstoString(multiset<int, greater<int>> items){
+    string key = "";
+    for(auto it = items.begin(); it != items.end(); ++it){
+        key += to_string(*it);
+    }
+    sort(key.begin(), key.end());
+    return key;
+}
+
+string Container_Solver::packageKey(Package p){
+    string key = "";
+    for(auto it = p.P.begin(); it != p.P.end(); ++it){
+        key += to_string(*it) + " ";
+    }
+    sort(key.begin(), key.end());
+    return key;
+}
+
 

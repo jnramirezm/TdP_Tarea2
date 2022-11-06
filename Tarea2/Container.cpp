@@ -6,6 +6,11 @@ Container::Container(int capacity, int maxContainers){
     this->maxContainers = maxContainers;
 }
 
+Container::Container(){
+    this->capacity = 0;
+    this->maxContainers = 0;
+}
+
 void Container::insert(Package p){
     this->C.insert(p);
 }
@@ -17,10 +22,33 @@ void Container::printPackages(){
 }
 
 bool operator<(const Container& lhs, const Container& rhs){
-    return lhs.C.size() < rhs.C.size();
+    int sum1 = 0;
+    int sum2 = 0;
+    
+    for (auto it = lhs.C.begin(); it != lhs.C.end(); ++it){
+        Package p = *it;
+        sum1 += p.getSum();
+    }
+    for (auto it = rhs.C.begin(); it != rhs.C.end(); ++it){
+        Package p = *it;
+        sum2 += p.getSum();
+    }
+        
+
+    return sum1 < sum2;
 }
 bool operator>(const Container& lhs, const Container& rhs){
-    return lhs.C.size() > rhs.C.size();
+    int sum1 = 0;
+    int sum2 = 0;
+    for(auto it = lhs.C.begin(); it != lhs.C.end(); ++it){
+        Package p = *it;
+        sum1 += p.getSum();
+    }
+    for(auto it = rhs.C.begin(); it != rhs.C.end(); ++it){
+        Package p = *it;
+        sum2 += p.getSum();
+    }
+    return sum1 > sum2;
 }
 
 bool operator==(const Container& lhs, const Container& rhs){

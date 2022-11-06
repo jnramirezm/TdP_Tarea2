@@ -6,6 +6,7 @@
 
 class Container {
 public:
+    Container();
     Container(int capacity, int maxContainers);
     int capacity;
     int maxContainers;
