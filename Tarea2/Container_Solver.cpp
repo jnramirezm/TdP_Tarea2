@@ -1,12 +1,29 @@
 #include "Container_Solver.h"
 using namespace std;
 
+/*----------------------------------
+
+Clase que representa el algoritmo para resolver el problema de empaquetamiento de items 
+en contenedores.
+
+----------------------------------*/
+
+/*
+Descripcion: Constructor de la clase Container_Solver
+Parametros: N/A
+Retorno: N/A
+*/
 Container_Solver::Container_Solver(){
     this-> capacity = capacity;
     this-> items = items;
-    this-> heuristicsss = Container();
+    this-> solucion = Container();
 }
 
+/*
+Descripcion: Metodo que realiza una solucion inicial al problema.
+Parametros: N/A
+Retorno: int suma
+*/
 int Container_Solver::heurisic(){
 
     int res;
@@ -28,20 +45,32 @@ int Container_Solver::heurisic(){
             }  
         }
         if(res == 0){
+            if( i > capacity){
+                return -1;
+            }
             Package aux = Package(capacity);
             aux.insert(i);
             container.insert(aux);
         }
     }
-    this->heuristicsss = container;
+    this->solucion = container;
     return container.C.size();
 }
 
+/*
+Descripcion: Metodo que busca la cantidad de contenedores optima para resolver el problema.
+Parametros: N/A
+Retorno: int Cantidad optima de paquetes dentro del contenedor.
+*/
 int Container_Solver::solve(){
     int a = heurisic();
+    //int a = items.size();
+    if(a == -1){
+        return -1;
+    }
     int b = sumItems()/capacity;
     cout << "Heuristic: " << a << endl;
-    cout << "Optimal: " << b << endl;
+    cout << "Optimal: " << b << "\n" << endl;
     while(a > b){
         int k = (a+b)/2;
         if(checksubSets(k)){
@@ -55,10 +84,15 @@ int Container_Solver::solve(){
             }
         }
     }
-    heuristicsss.printPackages();
+    solucion.printPackages();
     return a;
 }
 
+/*
+Descripcion: Metodo que suma el total del peso de los items.
+Parametros: N/A
+Retorno: int suma
+*/
 int Container_Solver::sumItems(){
     int sum = 0;
     for (int i : items){
@@ -67,18 +101,16 @@ int Container_Solver::sumItems(){
     return sum;
 }
 
+/*
+Descripcion: Metodo que verifica si es posible empaquetar los items en k paquetes.
+Parametros: int k
+Retorno: bool
+*/
 bool Container_Solver::checksubSets(int k){
-    
-    // Crear un hash table con todos los subconjuntos de containers
     string fKey;
     int condition;
     vector<Container> containers;
     unordered_map<string,Container> hTable, nexthTable, nextnexthTable;
-    //unordered_map<string, Package> hPackage, nexthPackage;
-    // multiset de multiset de int
-    // multiset de paquetes
-    // container
-    //unordered_set<Container> hTableSet;
     Container container = Container(capacity,k);
     for(int i = 0 ; i < k ; i++){
         Package p = Package(capacity);
@@ -114,24 +146,26 @@ bool Container_Solver::checksubSets(int k){
         nextnexthTable.clear();
         nexthTable.clear();
     }
-    string sItems = itemstoString(items);
     for(auto it = hTable.begin(); it != hTable.end(); ++it){
         string aux = it->first;
         stringstream ss(aux);
         string token;
         getline(ss, token, ',');
         int sum = stoi(token);
-        if(sum == items.size()){
+        if(sum == (int)items.size()){
             cout << "Found" << endl;
-            heuristicsss = it->second;
-            break;
+            solucion = it->second;
+            return true;
         }
-
-        //it->second.printPackages();
     }
     return true;
 }
 
+/*
+Descripcion: Metodo que crea una llave unica para el hash table de un contenedor.
+Parametros: Container container
+Retorno: string key
+*/
 string Container_Solver::createKey(Container c){
     string key = "";
     int sumsize = 0;
@@ -139,30 +173,13 @@ string Container_Solver::createKey(Container c){
         Package aux = *it;
         sumsize += aux.size();
         for(auto it2 = aux.P.begin(); it2 != aux.P.end(); ++it2){
-            key += to_string(*it2);
+            string aux2 = to_string(*it2);
+            key += aux2;
         }
     }
-   // sort(key.begin(), key.end());
     string b = to_string(sumsize) + "." + key;
     return b;
 }
 
-string Container_Solver::itemstoString(multiset<int, greater<int>> items){
-    string key = "";
-    for(auto it = items.begin(); it != items.end(); ++it){
-        key += to_string(*it);
-    }
-    sort(key.begin(), key.end());
-    return key;
-}
-
-string Container_Solver::packageKey(Package p){
-    string key = "";
-    for(auto it = p.P.begin(); it != p.P.end(); ++it){
-        key += to_string(*it) + " ";
-    }
-    sort(key.begin(), key.end());
-    return key;
-}
 
 

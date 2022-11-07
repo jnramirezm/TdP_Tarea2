@@ -24,4 +24,4 @@ test_Container_Solver: test_Container_Solver.cpp Container_Solver.o Container.o 
 	g++ $(FLAGS) -o test_Container_Solver test_Container_Solver.cpp Container_Solver.o Container.o Package.o
 
 clear:
-	rm -f *.o main test_Container test_Package
+	rm -f *.o main test_Container test_Package test_Container_Solver
