@@ -3,8 +3,8 @@ using namespace std;
 
 /*----------------------------------
 
-Clase que representa el algoritmo para resolver el problema de empaquetamiento de items 
-en contenedores.
+Clase que representa el algoritmo para resolver el problema de empaquetamiento de items
+en un contenedor.
 
 ----------------------------------*/
 
@@ -20,7 +20,7 @@ Container_Solver::Container_Solver(){
 }
 
 /*
-Descripcion: Metodo que realiza una solucion inicial al problema.
+Descripcion: Metodo que realiza una solucion inicial al problema, metodo First Fit.
 Parametros: N/A
 Retorno: int suma
 */
@@ -64,7 +64,6 @@ Retorno: int Cantidad optima de paquetes dentro del contenedor.
 */
 int Container_Solver::solve(){
     int a = heurisic();
-    //int a = items.size();
     if(a == -1){
         return -1;
     }
@@ -109,13 +108,15 @@ Retorno: bool
 bool Container_Solver::checksubSets(int k){
     string fKey;
     int condition;
-    vector<Container> containers;
-    unordered_map<string,Container> hTable, nexthTable, nextnexthTable;
+    unordered_map<string,Container> hTable, nexthTable, auxNexthTable;
+    unordered_set<string> packageCreated;
     Container container = Container(capacity,k);
+
     for(int i = 0 ; i < k ; i++){
         Package p = Package(capacity);
         container.insert(p);
     }
+    
     fKey = createKey(container);
     hTable.insert(make_pair(fKey,container));
     for (int i : items){
@@ -126,24 +127,30 @@ bool Container_Solver::checksubSets(int k){
                     Package aux2 = *it2;
                     if (aux2.getSum() + i <= capacity){
                         aux2.insert(i);
-                        Container aux3 = aux;
-                        aux3.C.erase(aux3.C.find(*it2));
-                        aux3.C.insert(aux2);
-                        fKey = createKey(aux3);
-                        auto inserted = nexthTable.insert(make_pair(fKey,aux3));
-                        if(inserted.second){
-                            nextnexthTable.insert(make_pair(fKey,aux3));
-                            condition = 1;
+                        if(packageCreated.find(aux2.getKey()) == packageCreated.end()){ // Se busca si el paquete ya fue creado
+                            packageCreated.insert(aux2.getKey());
+                            Container aux3 = aux;
+                            aux3.C.erase(aux3.C.find(*it2));    // Se elimina el paquete que se va a modificar
+                            aux3.C.insert(aux2);                // se inserta el paquete modificado al container aux
+                            fKey = createKey(aux3);
+                            auto inserted = nexthTable.insert(make_pair(fKey,aux3));
+                            if(inserted.second){    // Verifica si se inserto el elemento y se inserta en la tabla verdadera
+                                auxNexthTable.insert(make_pair(fKey,aux3));
+                                condition = 1;
+                             }
                         }
+                    }
+                    if(it2 == --aux.C.end()){   // se limpia la tabla de nodos de packages
+                        packageCreated.clear();
                     }
                 }  
             };
         if(condition == 0){
             return false;
         }
-        hTable.clear();
-        hTable = nextnexthTable;
-        nextnexthTable.clear();
+        hTable.clear();         // Se sobreescribe la tabla hash y se limpian las auxiliares
+        hTable = auxNexthTable;
+        auxNexthTable.clear();
         nexthTable.clear();
     }
     for(auto it = hTable.begin(); it != hTable.end(); ++it){

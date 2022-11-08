@@ -58,6 +58,20 @@ int Package::size(){
 }
 
 /*
+Descripcion: Crea una llave para el paquete
+Parametros: N/A
+Retorno: string key
+*/
+string Package::getKey(){
+  string key = "";
+  for (auto it = P.begin(); it != P.end(); ++it){
+    key += to_string(*it);
+  }
+  sort(key.begin(), key.end());
+  return key;
+}
+
+/*
 Descripcion: Metodo necesario para el uso de Multiset, verifica si un paquete es menor que otro calculando 
 el valor de la suma de sus items.
 Parametros: Package lhs y Package rhs

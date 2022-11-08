@@ -6,7 +6,8 @@
 #include "Container.h"
 /*-------------------------------
 
-Clase que representa el algoritmo para resolver el problema de empaquetamiento de items en contenedores.
+Clase que representa el algoritmo para resolver el problema de empaquetamiento de items 
+en un contenedor.
 
 --------------------------------*/
 

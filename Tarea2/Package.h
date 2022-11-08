@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iterator>
+#include <algorithm>
 #include <set>
 #include <stdbool.h>
 
@@ -20,6 +21,7 @@ class Package{
         void printItems();                // Imprime los items del paquete
         int getSum();                     // Suma los items del paquete
         int size();                       // Retorna la cantidad de items que contiene el paquete
+        string getKey();                  // Crea una llave para el paquete
         friend bool operator<(const Package& lhs, const Package& rhs); // Sobrecarga del operador < para comparar paquetes
         friend bool operator>(const Package& lhs, const Package& rhs); // Sobrecarga del operador > para comparar paquetes
         friend bool operator==(const Package& lhs, const Package& rhs); // Sobrecarga del operador == para comparar paquetes
